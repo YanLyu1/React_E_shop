@@ -4,15 +4,8 @@ import ShopPage from './pages/shop/shop.component'
 import Header from './components/header/header.component'
 import SignInAndSignUp from './pages/sign-in-sign-up/sign-in-sign-up.component'
 import {Route, Switch} from 'react-router-dom'
-import {auth} from './firebase/firebase.utils'
+import {auth, createUserProfileDocument} from './firebase/firebase.utils'
 import React from 'react';
-
-const HastsPage = () => {
-  <div>
-    <h1> Hats page</h1>
-  </div>
-}
-
 class App extends React.Component {
 
   constructor() {
@@ -27,10 +20,24 @@ class App extends React.Component {
 
   //called once when the app was just rendered
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      this.setState({currentUser: user});
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
 
-      console.log("logged user is: ", user);
+        userRef.onSnapshot(snapShot => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data()
+            }
+          });
+        });
+      } else {
+        this.setState({currentUser: userAuth});
+      }
+      
+
+      // console.log("logged user is: ", user);
     })
   }
 
