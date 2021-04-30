@@ -6,12 +6,17 @@ const selectCart = state => state.cart;
 
 
 //output selector需要用到createSelector函数，有两个参数
-//第一个是一个数组，第二个表示从selector中取出的对象，现在它就是一个memo selector了
+//第一个是一个数组，其中是一个reducer
+//第二个是表示从第一个参数中指定的reducer中取出的对象，现在它就是一个memo selector了。返回的是一个值
 export const selectCartItems = createSelector(
     [selectCart],
     cart => cart.cartItem
 );
 
+export const selectCartHidden = createSelector(
+    [selectCart],
+    cart => cart.hidden
+)
 export const selectCartItemCount = createSelector(
     [selectCartItems],
     cartItem => cartItem.reduce(
